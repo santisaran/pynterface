@@ -182,7 +182,6 @@ class mimain(wx.App):
         self.frame.btnCom = xrc.XRCCTRL(self.frame, 'btnComenzar')
         self.frame.btnEnviar = xrc.XRCCTRL(self.frame, 'btnEnviar')
         self.frame.btnEnviar.Disable()
-        
         self.winFinal = (self.frame.f1fp, self.frame.f1fs, self.frame.r1f,
             self.frame.f2fp, self.frame.f2fs, self.frame.r2f) 
         self.winIni = (self.frame.f1ip, self.frame.f1is, self.frame.r1i,
@@ -417,6 +416,7 @@ Mettler Toledo"
         #deshabilita la respuesta de los botones a la terminal de la balanza
         #los datos son enviados al puerto serie.
             self.indice = -1            #índice que apuntará a una tarea
+            self.frame.estados = {"TAREA":self.esTarea,"PESAR":self.esPesar,"PESANDO":self.esPesando}
             self.estado = "TAREA"       #estado del programa.
             self.mettlertoledo()        #función que se comunica con la balanza
     #de aquí en mas cada dato que llegue de la balanza será atendido como un 
@@ -454,72 +454,77 @@ Mettler Toledo"
             self.Conexion.writer("DW")
             self.Conexion.writer("Z")
             evt.Skip()
-        if self.estado == "TAREA":
-            if evt.data == OK:
-                self.estado = "pesar"
+        self.frame.estados[self.estado] #diccionario de funciones
+
+#-------------------------------------------------------------------------#
+#------Funciones llamadas desde el diccionario self.frame.estados---------#
+#-------------------------------------------------------------------------#
+
+    def esTarea(self):
+        if evt.data == OK:
+                self.estado = "PESAR"
                 self.Filtros = filtros(self,self.pesando[0],self.Tareas\
                     [self.indice]["repeticiones"])
                 #instancia de la clase filtros, inicial o final, y con el 
                 #numero de repeticiones.
                 self.Conexion.printM(self.pesando[1][0])
                 #imprime en la pantalla de la terminal mettler y en un log
-            elif evt.data == DOWN:
-                self.indice -= 1
-                if self.indice < -len(self.Tareas):
-                    self.indice = self.indice + len(self.Tareas)
-                self.mettlertoledo()
-            elif evt.data == UP:
-                self.indice += 1
-                if self.indice == 0:
-                    self.indice = -len(self.Tareas)
-                self.mettlertoledo()
-            elif evt.data == NO:
-                pass
+        elif evt.data == DOWN:
+            self.indice -= 1
+            if self.indice < -len(self.Tareas):
+                self.indice = self.indice + len(self.Tareas)
+            self.mettlertoledo()
+        elif evt.data == UP:
+            self.indice += 1
+            if self.indice == 0:
+                self.indice = -len(self.Tareas)
+            self.mettlertoledo()
+        elif evt.data == NO:
+            pass
  
-        elif self.estado == "pesar":
-            if evt.data == OK:
-                self.estado = "pesando"
-                #Cambia al estado pesando
-                self.Conexion.writer("DW")
-                #Vuelve a mostrar el peso en pantalla
-                print self.Filtros.quefiltro
-            elif evt.data == DOWN:
-                self.Filtros.downpuntero()
-                self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
-            elif evt.data == UP:
+    def esPesar(self):
+        if evt.data == OK:
+            self.estado = "pesando"
+            #Cambia al estado pesando
+            self.Conexion.writer("DW")
+            #Vuelve a mostrar el peso en pantalla
+            print self.Filtros.quefiltro
+        elif evt.data == DOWN:
+            self.Filtros.downpuntero()
+            self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
+        elif evt.data == UP:
+            self.Filtros.uppuntero()
+            self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
+        elif evt.data == NO:
+            #~ self.estado = "TAREA"
+            pass
+            
+    def esPesando(self):
+        if (((evt.data[0:3] == "S S")|(evt.data[0:3] == "S D"))&(self.Filtros.guardar)):
+            if self.Filtros.Append(evt.data[-11:-3]):   
+        # guarda el valor del peso, si retorna True es por que ya se  
+        # pesaron las repeticiones.
+                self.pesando[1][self.Filtros.puntero] += "*"
+                self.pesando[2][self.Filtros.puntero] = True  
+                #tilda el filtro como pesado
+                self.frame.texpeso[self.pesando[0]][self.Filtros.puntero].\
+                    AppendText(self.Filtros.Promedio(self.Filtros.puntero))
                 self.Filtros.uppuntero()
+                self.estado = "PESAR"
                 self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
-            elif evt.data == NO:
-                #~ self.estado = "TAREA"
-                pass
-                
-        elif self.estado == "pesando":
-            if (((evt.data[0:3] == "S S")|(evt.data[0:3] == "S D"))&(self.Filtros.guardar)):
-                if self.Filtros.Append(evt.data[-11:-3]):   
-            # guarda el valor del peso, si retorna True es por que ya se  
-            # pesaron las repeticiones.
-                    self.pesando[1][self.Filtros.puntero] += "*"
-                    self.pesando[2][self.Filtros.puntero] = True  
-                    #tilda el filtro como pesado
-                    self.frame.texpeso[self.pesando[0]][self.Filtros.puntero].\
-                        AppendText(self.Filtros.Promedio(self.Filtros.puntero))
-                    self.Filtros.uppuntero()
-                    self.estado = "pesar"
-                    self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
-                self.Filtros.guardar = False
-                print evt.data
-            if evt.data == OK:
-                self.Conexion.writer("SIU")
-                self.Filtros.guardar = True
-        #guardar el próximo valor que llegue de la balanza
-            if evt.data == NO:
-                pass
-                
-    #~ def OnTest2Timer(self):
-        #~ self.Conexion.writer('D "bien"')
-        #~ self.t2.Stop()
-        #~ del self.t2
-        #~ return 0
+            self.Filtros.guardar = False
+            print evt.data
+        if evt.data == OK:
+            self.Conexion.writer("SIU")
+            self.Filtros.guardar = True
+    #guardar el próximo valor que llegue de la balanza
+        if evt.data == NO:
+            pass
+            
+#-------------------------------------------------------------------------#
+#-------------------------------------------------------------------------#
+#-------------------------------------------------------------------------#
+
     
     def DisableFinal(self):
         for wins in self.winFinal:
