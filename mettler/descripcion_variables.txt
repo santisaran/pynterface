@@ -1,0 +1,17 @@
+Variables de pynterface
+
+clase mimain
+
+self.seleccionados = [] , items seleccionados de la lista E
+self.diagCselected = [] , items seleccionados de la lista C
+self.Tareas = [] , lista de diccionarios cada uno con los valores de una tarea distinta.
+self.frame.conectado = False    , flag que indica conexión con la balanza
+self.frame.alive = True         , flag que mantiene con vida el trhead de conexión
+self.frame.selected = []
+
+self.estado ,  indica el estado en que se encuentra el programa
+self.indice,    indica que tarea se va a realizar
+self.filtro ,   apunta al filtro que se está pesando
+
+class AcquireEvent(wx.PyEvent):
+self.data datos que llegan desde la balanza.

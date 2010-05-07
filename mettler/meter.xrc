@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+	<object class="wxFrame" name="MyFrame">
+		<style>wxDEFAULT_FRAME_STYLE</style>
+		<size>757,450</size>
+		<title>Pesada de Filtros</title>
+		<object class="wxBoxSizer">
+			<orient>wxVERTICAL</orient>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL|wxEXPAND</flag>
+				<border>0</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText1">
+							<label>Cargando: </label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="staticCargando">
+							<label></label>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND | wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticLine" name="m_staticline1">
+					<style>wxLI_HORIZONTAL</style>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxGridBagSizer">
+					<vgap>2</vgap>
+					<hgap>2</hgap>
+					<growablecols>2,4,6</growablecols>
+					<growablerows></growablerows>
+					<object class="sizeritem">
+						<cellpos>1,0</cellpos>
+						<cellspan>3,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>2</border>
+						<object class="wxStaticText" name="m_staticText3">
+							<label>Fase 1</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>0,2</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText4">
+							<label>Primario</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>0,4</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText5">
+							<label>Secundario</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>0,6</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText6">
+							<label>Referencia 1</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,3</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cf1ip">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,5</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cf1is">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,5</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cf2fs1">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,3</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cf1fp">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,7</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cr1i">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,7</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cr1f">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,2</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="f1ip">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,2</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="f1fp">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,4</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="f1is">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,4</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="f1fs">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,6</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="r1i">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,1</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="texInit1">
+							<label>Inicial</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,1</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="texFin1">
+							<label>Final</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,6</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="r1f">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND | wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticLine" name="m_staticline2">
+					<style>wxLI_HORIZONTAL</style>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxGridBagSizer">
+					<vgap>2</vgap>
+					<hgap>2</hgap>
+					<growablecols>2,4,6</growablecols>
+					<growablerows></growablerows>
+					<object class="sizeritem">
+						<cellpos>1,0</cellpos>
+						<cellspan>3,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>2</border>
+						<object class="wxStaticText" name="m_staticText31">
+							<label>Fase 2</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>0,2</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText41">
+							<label>Primario</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>0,4</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText51">
+							<label>Secundario</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>0,6</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText61">
+							<label>Referencia 2</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,3</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_CENTER_HORIZONTAL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cf2ip">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,5</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cf2is">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,5</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cf2fs">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,3</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cf2fp">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,7</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cr2i">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,2</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="f2ip">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,2</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="f2fp">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,4</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="f2is">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,4</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="f2fs">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,6</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="r2i">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>1,1</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_CENTER_HORIZONTAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="texInit2">
+							<label>Inicial</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,1</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="texFin2">
+							<label>Final</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,6</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxTextCtrl" name="r2f">
+							<style>wxTE_READONLY</style>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<cellpos>2,7</cellpos>
+						<cellspan>1,1</cellspan>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>2</border>
+						<object class="wxButton" name="cr2f">
+							<size>20,25</size>
+							<enabled>0</enabled>
+							<label>C</label>
+							<default>0</default>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND | wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticLine" name="m_staticline3">
+					<style>wxLI_HORIZONTAL</style>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALIGN_RIGHT|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="salidaBal">
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="btnEnviar">
+							<label>enviarSIU</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxToggleButton" name="btnComenzar">
+							<label>Comenzar</label>
+							<checked>0</checked>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxALL|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxListCtrl" name="listaApesar">
+					<style>wxLC_REPORT|wxLC_SINGLE_SEL</style>
+				</object>
+			</object>
+		</object>
+		<object class="wxMenuBar" name="m_menubar1">
+			<label>MyMenuBar</label>
+			<object class="wxMenu" name="m_menu1">
+				<label>_Archivo</label>
+				<object class="wxMenuItem" name="abrir">
+					<label>&amp;Abrir</label>
+					<help></help>
+				</object>
+				<object class="wxMenuItem" name="guardar">
+					<label>Guardar\tctrl+g</label>
+					<help></help>
+				</object>
+				<object class="wxMenuItem" name="salir">
+					<label>&amp;Salir\tctrl+q</label>
+					<help></help>
+				</object>
+			</object>
+			<object class="wxMenu" name="m_menu2">
+				<label>_Edicion</label>
+			</object>
+			<object class="wxMenu" name="m_menu3">
+				<label>_Ayuda</label>
+				<object class="wxMenuItem" name="acercaDe">
+					<label>Acerca de...</label>
+					<help></help>
+				</object>
+			</object>
+		</object>
+	</object>
+	<object class="wxDialog" name="CloseDialog">
+		<style>wxDEFAULT_DIALOG_STYLE|wxSTAY_ON_TOP</style>
+		<title></title>
+		<object class="wxBoxSizer">
+			<orient>wxVERTICAL</orient>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText18">
+					<label>Desea salir sin guardar los cambios?</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="si">
+							<label>_Aceptar</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="no">
+							<label>_Cancelar</label>
+							<default>0</default>
+						</object>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
+	<object class="wxDialog" name="dialogoCarga">
+		<style>wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER</style>
+		<size>800,-1</size>
+		<title>Lista de Tareas</title>
+		<object class="wxBoxSizer">
+			<orient>wxVERTICAL</orient>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL|wxEXPAND</flag>
+				<border>0</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText1">
+							<label>ID VEHICULO:</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxALL</flag>
+						<border>1</border>
+						<object class="wxTextCtrl" name="vinVehiculo">
+							<value>Ingrese VIN</value>
+							<maxlength>17</maxlength>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND</flag>
+				<border>0</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText15">
+							<label>Modelo: </label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>2</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="modelo">
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText2">
+							<label>Id VASOS:</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxChoice" name="vasos">
+							<selection>0</selection>
+							<content>
+								<item>1</item>
+								<item>2</item>
+								<item>3</item>
+								<item>4</item>
+								<item>5</item>
+								<item>6</item>
+								<item>7</item>
+								<item>8</item>
+								<item>9</item>
+							</content>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText16">
+							<label>Repeticiones: </label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxChoice" name="repeticiones">
+							<selection>1</selection>
+							<content>
+								<item>1</item>
+								<item>2</item>
+								<item>3</item>
+								<item>4</item>
+								<item>5</item>
+							</content>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText17">
+							<label>Usuario: </label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>3</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxComboBox" name="usuario">
+							<value></value>
+							<content>
+								<item>P.Amaya</item>
+								<item>M.Ruiz</item>
+								<item>S.Paleka</item>
+							</content>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND | wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticLine" name="m_staticline1">
+					<style>wxLI_HORIZONTAL</style>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALIGN_LEFT|wxALL|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxButton" name="btnBorrar">
+							<label>Borrar Lista</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxButton" name="btnBorrarItem">
+							<label>Borrar selección</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_RIGHT|wxALL|wxRIGHT|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxButton" name="btnCargar">
+							<label>Cargar</label>
+							<default>1</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<option>1</option>
+						<flag></flag>
+						<border>5</border>
+						<size>0,0</size>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_RIGHT|wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="btnACargado">
+							<label>Abrir Cargado</label>
+							<default>0</default>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND | wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticLine" name="m_staticline6">
+					<style>wxLI_HORIZONTAL</style>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText23">
+					<label>Tareas A Realizar</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxALL|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxListCtrl" name="listaCargando">
+					<style>wxLC_REPORT|wxLC_SORT_ASCENDING|wxLC_SORT_DESCENDING</style>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND</flag>
+				<border>0</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="spacer">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<size>0,0</size>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxButton" name="btnEmpezar">
+							<label>Empezar</label>
+							<default>0</default>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND | wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticLine" name="m_staticline5">
+					<style>wxLI_HORIZONTAL</style>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText24">
+					<label>Tareas sin completar</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxALL|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxListCtrl" name="listaSinCompletar">
+					<style>wxLC_REPORT</style>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="spacer">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<size>0,0</size>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxButton" name="btnContinuar">
+							<label>Empezar</label>
+							<default>0</default>
+						</object>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
+	<object class="wxFrame" name="FrameBase">
+		<style>wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL</style>
+		<size>509,354</size>
+		<title></title>
+		<object class="wxMenuBar" name="m_menubar2">
+			<label>MyMenuBar</label>
+			<object class="wxMenu" name="archivo">
+				<label>_Archivo</label>
+				<object class="wxMenuItem" name="buscar">
+					<label>&amp;Buscar</label>
+					<help></help>
+				</object>
+			</object>
+		</object>
+		<object class="wxBoxSizer">
+			<orient>wxVERTICAL</orient>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxALL|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxListCtrl" name="m_listCtrl3">
+					<style>wxLC_REPORT</style>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxButton" name="btnCargarSel">
+							<label>_Cargar\nSelección</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<size>0,0</size>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxButton" name="btnfecha">
+							<label>Por Fecha</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<object class="wxBoxSizer">
+							<orient>wxVERTICAL</orient>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<object class="wxStaticText" name="m_staticText21">
+									<enabled>0</enabled>
+									<label>Desde</label>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<object class="wxDatePickerCtrl" name="m_datePicker1">
+									<style>wxDP_DEFAULT</style>
+									<enabled>0</enabled>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<object class="wxStaticText" name="m_staticText22">
+									<enabled>0</enabled>
+									<label>Hasta</label>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<object class="wxDatePickerCtrl" name="m_datePicker2">
+									<style>wxDP_DEFAULT</style>
+									<enabled>0</enabled>
+								</object>
+							</object>
+						</object>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
+</resource>
