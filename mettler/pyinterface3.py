@@ -19,7 +19,7 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-#robandorobando robandomeelautodemoe
+
 try:
     import cPickle as pickle
 except:
@@ -416,7 +416,8 @@ Mettler Toledo"
         #deshabilita la respuesta de los botones a la terminal de la balanza
         #los datos son enviados al puerto serie.
             self.indice = -1            #índice que apuntará a una tarea
-            self.frame.estados = {"TAREA":self.esTarea,"PESAR":self.esPesar,"PESANDO":self.esPesando}
+            self.frame.estados = {"TAREA": self.esTarea, "PESAR": self.esPesar,
+                "PESANDO": self.esPesando}
             self.estado = "TAREA"       #estado del programa.
             self.mettlertoledo()        #función que se comunica con la balanza
     #de aquí en mas cada dato que llegue de la balanza será atendido como un 
@@ -449,18 +450,18 @@ Mettler Toledo"
         evt.Skip()
     
     def OnAcquireData(self,evt):
-        print evt.data
+        print evt.data + " " + self.estado
         if evt.data == CERO:
             self.Conexion.writer("DW")
             self.Conexion.writer("Z")
             evt.Skip()
-        self.frame.estados[self.estado] #diccionario de funciones
-
+        self.frame.estados[self.estado](evt) #diccionario de funciones
+        
 #-------------------------------------------------------------------------#
 #------Funciones llamadas desde el diccionario self.frame.estados---------#
 #-------------------------------------------------------------------------#
 
-    def esTarea(self):
+    def esTarea(self,evt):
         if evt.data == OK:
                 self.estado = "PESAR"
                 self.Filtros = filtros(self,self.pesando[0],self.Tareas\
@@ -482,9 +483,9 @@ Mettler Toledo"
         elif evt.data == NO:
             pass
  
-    def esPesar(self):
+    def esPesar(self,evt):
         if evt.data == OK:
-            self.estado = "pesando"
+            self.estado = "PESANDO"
             #Cambia al estado pesando
             self.Conexion.writer("DW")
             #Vuelve a mostrar el peso en pantalla
@@ -499,8 +500,9 @@ Mettler Toledo"
             #~ self.estado = "TAREA"
             pass
             
-    def esPesando(self):
+    def esPesando(self,evt):
         if (((evt.data[0:3] == "S S")|(evt.data[0:3] == "S D"))&(self.Filtros.guardar)):
+            """si el dato que llega es una medida de peso y se está pesando"""
             if self.Filtros.Append(evt.data[-11:-3]):   
         # guarda el valor del peso, si retorna True es por que ya se  
         # pesaron las repeticiones.
@@ -517,7 +519,8 @@ Mettler Toledo"
         if evt.data == OK:
             self.Conexion.writer("SIU")
             self.Filtros.guardar = True
-    #guardar el próximo valor que llegue de la balanza
+        #este flag indica que hay que guardar el próximo valor 
+        #que llegue de la balanza
         if evt.data == NO:
             pass
             
@@ -543,12 +546,8 @@ Mettler Toledo"
             wins.Enable()
             
     def CargarPesos(self,diccio):
-        self.frame.f1ip.Clear()
-        self.frame.f2ip.Clear()
-        self.frame.f1is.Clear()
-        self.frame.f2is.Clear()
-        self.frame.r1i.Clear()
-        self.frame.r2i.Clear()
+        for win in self.winIni:
+            win.Clear()
         self.frame.f1ip.AppendText(str(diccio["F1Pi"]))
         self.frame.f2ip.AppendText(str(diccio["F2Pi"]))
         self.frame.f1is.AppendText(str(diccio["F1Si"]))
@@ -687,17 +686,22 @@ class filtros():
         self.guardar = False
         self.puntero = 0
         if momento == "ini":
-            self.filtros = {"F1Pi": [],"tF1Pi": None,"dpF1Pi": None,"F1Si": [],
+            self.filtros = {"F1Pi": [],"tF1Pi": None, "dpF1Pi": None,"F1Si": [],
                 "tF1Si": None,"dpF1Si": None,"F2Pi": [],"tF2Pi": None,"dpF2Pi": None,
                 "F2Si": [],"tF2Si": None,"dpF2Si": None,"R1i": [],"tR1i": None,
                 "dpR1i": None,"R2i": [],"tR2i": None,"dpR2i": None}
-            self.quefiltro = ["R1i","F1Pi","F1Si","F2Pi","F2Si","R2i"]
+            self.quefiltro = ("R1i","F1Pi","F1Si","F2Pi","F2Si","R2i")
+            self.quefiltrodp = ("dpR1i","dpF1Pi","dpF1Si","dpF2Pi","dpF2Si","dpR2i")
+            self.quefiltrotemp = ("tR1i","tF1Pi","tF1Si","tF2Pi","tF2Si","tR2i")
         elif momento == "fin":
-            self.filtros = {"F1Pf": [],"tF1Pf": None,"dpF1Pf": None,"F1Sf": [],"tF1Sf"\
-                : None,"dpF1Sf": None,"F2Pf": [],"tF2Pf": None,"dpF2Pf": None,"F2Sf"\
-                : [],"tF2Sf": None,"dpF2Sf": None,"R1f": [],"tR1f": None,"dpR1f": \
-                None,"R2f": [],"tR2f": None,"dpR2f":None}
-            self.quefiltro = ["R1f","F1Pf","F1Sf","F2Pf","F2Sf","R2f"]
+            self.filtros = {"F1Pf": [],"tF1Pf": None, "dpF1Pf": None,"F1Sf": [],
+                "tF1Sf": None,"dpF1Sf": None,"F2Pf": [],"tF2Pf": None,
+                "dpF2Pf": None,"F2Sf": [],"tF2Sf": None,"dpF2Sf": None,
+                "R1f": [],"tR1f": None,"dpR1f": None,"R2f": [],
+                "tR2f": None, "dpR2f": None}
+            self.quefiltro = ("R1f","F1Pf","F1Sf","F2Pf","F2Sf","R2f")
+            self.quefiltrodp = ("dpR1f","dpF1Pf","dpF1Sf","dpF2Pf","dpF2Sf","dpR2f")
+            self.quefiltrotemp = ("tR1f","tF1Pf","tF1Sf","tF2Pf","tF2Sf","tR2f")
         else:
             return 1
         print "clase filtros creada " + self.win.Tareas[-1]["repeticiones"]
@@ -734,7 +738,7 @@ class filtros():
         total = 0.0
         for valor in self.filtros[self.quefiltro[punt]]:
             total += float(valor)
-        return str(total/float(len(self.filtros[self.quefiltro])))
+        return str(total/(len(self.filtros[self.quefiltro[punt]])))
         
 
             
