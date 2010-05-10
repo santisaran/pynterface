@@ -51,7 +51,8 @@ UP = "K C 9"
 DOWN = "K C 8"
 NO = "K C 6"
 CERO = "K C 5"
-
+OPENLEFT = "K C 10"
+OPENRIGTH = "K C 11"
 #----------------------------------------------------------------------#
 
 EVT_NEW_DATA_ID = wx.NewId()
@@ -137,7 +138,9 @@ class mimain(wx.App):
         #--------------------------------------------------------------#
         
         self.vistabase = self.res.LoadFrame(None,'FrameBase')
+        
         #Handlers------------------------------------------------------#
+        
         self.vistabase.Bind(wx.EVT_BUTTON,self.OnCargarSelec,id=xrc.XRCID('btnCargaSel'))    
         self.vistabase.Bind(wx.EVT_BUTTON,self.OnFecha,id=xrc.XRCID('btnfecha'))
         self.vistabase.Bind(wx.EVT_CLOSE, self.OnCloseVistaBase)
@@ -234,7 +237,10 @@ class mimain(wx.App):
         self.ctxtvinVehiculo.Unbind(wx.EVT_SET_FOCUS)
         evt.Skip()
         
-    def OnCargar(self,evt):    
+    def OnCargar(self,evt):
+        """carga los elementos agregados por el usuario a la lista de tareas
+        siempre que los mismos sean coherentes (vin no repetido, vasos no 
+        repetidos y sin datos vacíos)"""    
         VASOS = self.choiceVasos.GetStringSelection()
         VIN = self.ctxtvinVehiculo.GetValue()
         MODELO = self.ctxtModelo.GetValue()
@@ -277,24 +283,24 @@ class mimain(wx.App):
         return cadena
         
     def OnEItemSelected(self, evt):
+        """Agrega item seleccionado a una lista, si se acepta esta será 
+        la lista de tareas a pesar"""
         self.currentItem = evt.m_itemIndex
         self.seleccionados.append(self.currentItem)
-        #print ("OnItemSelected: %s, %s, \n" %
-        #                (self.currentItem,
-        #                self.dlgEList.GetItemText(self.currentItem)))
         evt.Skip()
 
     def OnEItemDeselected(self, evt):
+        """elimina de la lista self.seleccionados un item de la lista 
+        de tareas empezadas"""
         item = evt.m_itemIndex
         self.seleccionados.remove(item)
         #print ("OnItemDeselected: %d" % evt.m_itemIndex)
         evt.Skip()
         
     def OnCItemSelected(self, evt):
+        """ Selecciona elementos de la lista para poder borrarlos """
         item = evt.m_itemIndex
         self.diagCselected.append(item)
-        print "seleccionado %s " % item,
-        print self.diagCselected
         evt.Skip()
         
     def OnCItemDeselected(self, evt):
@@ -413,11 +419,14 @@ Mettler Toledo"
             #deshabilita cuadros de texto
             self.DisableInicial()
             self.Conexion.writer('K 3')     
+            self.Conexion.writer("WS 0")
+            self.puerta = 0
         #deshabilita la respuesta de los botones a la terminal de la balanza
         #los datos son enviados al puerto serie.
             self.indice = -1            #índice que apuntará a una tarea
             self.frame.estados = {"TAREA": self.esTarea, "PESAR": self.esPesar,
-                "PESANDO": self.esPesando}
+                "PESANDO": self.esPesando, "TERMINADO": self.esTerminado,
+                "BORRANDO": self.esBorrando }
             self.estado = "TAREA"       #estado del programa.
             self.mettlertoledo()        #función que se comunica con la balanza
     #de aquí en mas cada dato que llegue de la balanza será atendido como un 
@@ -450,12 +459,31 @@ Mettler Toledo"
         evt.Skip()
     
     def OnAcquireData(self,evt):
-        print evt.data + " " + self.estado
+        """Recibe un dato del el thread lector y dependiendo su valor dispara
+        la función necesaria, el switch se hace con un diccionario 
+        de funciones"""
+        print "llegó el dato: " + evt.data + " estado actual: " + self.estado
         if evt.data == CERO:
             self.Conexion.writer("DW")
             self.Conexion.writer("Z")
             evt.Skip()
-        self.frame.estados[self.estado](evt) #diccionario de funciones
+        elif evt.data == OPENLEFT:
+            if self.puerta == 0:        #puerta cerrada, abrir
+                self.Conexion.writer("WS 2")
+                self.puerta = 2
+            else:
+                self.Conexion.writer("WS 0")
+                self.puerta = 0
+        elif evt.data == OPENRIGTH:
+            if self.puerta == 0:        #puerta cerrada, abrir
+                self.Conexion.writer("WS 1")
+                self.puerta = 1
+            else:
+                self.Conexion.writer("WS 0")
+                self.puerta = 0
+        else:
+            self.frame.estados[self.estado](evt) #diccionario de funciones
+        
         
 #-------------------------------------------------------------------------#
 #------Funciones llamadas desde el diccionario self.frame.estados---------#
@@ -464,6 +492,7 @@ Mettler Toledo"
     def esTarea(self,evt):
         if evt.data == OK:
                 self.estado = "PESAR"
+                self.flg_borrar = False
                 self.Filtros = filtros(self,self.pesando[0],self.Tareas\
                     [self.indice]["repeticiones"])
                 #instancia de la clase filtros, inicial o final, y con el 
@@ -497,8 +526,32 @@ Mettler Toledo"
             self.Filtros.uppuntero()
             self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
         elif evt.data == NO:
-            #~ self.estado = "TAREA"
-            pass
+            self.estado = "BORRANDO"
+            self.Conexion.printM("del ultimo?")
+            self.selector = 0
+            self.queborrar = ("ult","todo")
+        evt.Skip()
+            
+    def esBorrando(self,evt):
+        if evt.data == OK:
+            print "borrando " + self.queborrar[self.selector] + " filtro " + self.pesando[1][self.Filtros.puntero]
+            self.Filtros.Del(self.selector)
+            self.estado = "PESAR"
+            self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
+        elif evt.data == DOWN:
+            self.selector -= 1
+            if self.selector == -1:
+                self.selector = len(self.queborrar)-1
+            self.Conexion.printM("del " + self.queborrar[self.selector])
+        elif evt.data == UP:
+            self.selector += 1
+            if self.selector == len(self.queborrar):
+                self.selector = 0
+            self.Conexion.printM("del " + self.queborrar[self.selector])
+        elif evt.data == NO:
+            self.estado = "PESAR"
+            self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
+
             
     def esPesando(self,evt):
         if (((evt.data[0:3] == "S S")|(evt.data[0:3] == "S D"))&(self.Filtros.guardar)):
@@ -506,14 +559,26 @@ Mettler Toledo"
             if self.Filtros.Append(evt.data[-11:-3]):   
         # guarda el valor del peso, si retorna True es por que ya se  
         # pesaron las repeticiones.
-                self.pesando[1][self.Filtros.puntero] += "*"
-                self.pesando[2][self.Filtros.puntero] = True  
+                if not self.pesando[2][self.Filtros.puntero]:
+                    self.pesando[1][self.Filtros.puntero] += "*"
+                    self.pesando[2][self.Filtros.puntero] = True  
                 #tilda el filtro como pesado
+                self.frame.texpeso[self.pesando[0]][self.Filtros.puntero].Clear()
                 self.frame.texpeso[self.pesando[0]][self.Filtros.puntero].\
                     AppendText(self.Filtros.Promedio(self.Filtros.puntero))
-                self.Filtros.uppuntero()
-                self.estado = "PESAR"
-                self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
+                try:
+                    vacio = self.pesando[2].index(False)
+                except:
+                    vacio = "vacio"
+                print "valor de vacio" + str(vacio)
+                if vacio == "vacio":
+                    self.Conexion.printM("terminado?")
+                    self.estado = "TERMINADO"
+                else:
+                    self.Filtros.puntero = vacio #apunta al próximo filtro vacío
+                    #~ self.Filtros.uppuntero()
+                    self.estado = "PESAR"
+                    self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
             self.Filtros.guardar = False
             print evt.data
         if evt.data == OK:
@@ -521,9 +586,40 @@ Mettler Toledo"
             self.Filtros.guardar = True
         #este flag indica que hay que guardar el próximo valor 
         #que llegue de la balanza
-        if evt.data == NO:
-            pass
+        elif evt.data == NO:
+            self.estado = "BORRANDO"
+            self.Conexion.printM("del ultimo?")
+            self.selector = 0
+            self.queborrar = ("ult","todo")
             
+        elif evt.data == DOWN:
+            """Mientras se está pesando un filtro se puede cambiar a otro"""
+            self.estado = "PESAR"
+            self.Filtros.downpuntero()
+            self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
+        elif evt.data == UP:
+            self.estado = "PESAR"
+            self.Filtros.uppuntero()
+            self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
+
+
+        evt.Skip()
+            
+    def esTerminado(self,evt):
+        """Tarea terminada, pregunta si seguir o guardar promedio"""
+        if evt.data == NO:
+            self.estado = "PESAR"
+            self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
+        elif evt.data == OK:
+            self.saveonbase()
+            self.estado = "TAREA"
+            self.mettlertoledo()
+        
+    def saveonbase(self):
+        """salva el valor actual de el diccionario en la base de datos"""
+        for n in range(6):
+            self.gesbbdd.nuevoValor((self.Filtros.quefiltro[n],self.Filtros.Promedio(n)),
+            ("fechahora",self.Tareas[self.indice]["fechahora"]))
 #-------------------------------------------------------------------------#
 #-------------------------------------------------------------------------#
 #-------------------------------------------------------------------------#
@@ -557,20 +653,20 @@ Mettler Toledo"
         
     def mettlertoledo(self):
         tarea = self.Tareas[self.indice]
-        if (((tarea['F1Pi'] == "")|(tarea['F1Si'] == "")|\
-            (tarea['F2Pi'] == "")|(tarea['F2Si'] == ""))|\
-            ((tarea['F1Pi'] == None)|(tarea['F1Si'] == None)\
+        if (((tarea['F1Pi'] == "")|(tarea['F1Si'] == "")|
+            (tarea['F2Pi'] == "")|(tarea['F2Si'] == ""))|
+            ((tarea['F1Pi'] == None)|(tarea['F1Si'] == None)
             |(tarea['F2Pi'] == None)|(tarea['F2Si'] == None))):
     #Este if verifica que no existan datos iniciales para esta tarea
             self.Conexion.printM('Ini Vas=' + str(tarea['vasos']))
-            self.pesando = ["ini",['ref 1','pri fas 1','sec fas 1',\
+            self.pesando = ["ini",['ref 1','pri fas 1','sec fas 1',
                 'pri fas 2','sec fas 2','ref 2'],[False,False,False,False,
-                False,False,False]]
+                False,False]]
         else:
             self.Conexion.printM('fin Vas=' + str(tarea['vasos']))
-            self.pesando = ["fin",['ref 1','pri fas 1','sec fas 1',\
+            self.pesando = ["fin",['ref 1','pri fas 1','sec fas 1',
                 'pri fas 2','sec fas 2','ref 2'],[False,False,False,False,
-                False,False,False]]
+                False,False]]
             
 #----------------------------------------------------------------------#
 #---------Funciones para todas las ventanas----------------------------#
@@ -620,6 +716,8 @@ class ThreadLector(threading.Thread):
         self.window.s.close()
     
     def run(self):  
+        """thread que se encarga de recibir los datos que vienen de la balanza
+        Por medio de una conexión TCP"""
         mensaje = ""
         self.conector.s.settimeout(1)
         while self.window.alive:
@@ -630,9 +728,9 @@ class ThreadLector(threading.Thread):
             if mensaje != "":
                 if mensaje == "life":
                     self.conector.writer("YESILIVE")
+                    #protocolo propio de este programa para mantener viva la 
+                    #conexió y detectar posibles cortes
                 else:
-                    #~ wx.CallAfter(self.window.SalidaText.Clear)
-                    #~ wx.CallAfter(self.window.SalidaText.AppendText,mensaje[:-2])
                     wx.PostEvent(self.window, AcquireEvent(mensaje[:-2]))   
         print "conexión cerrada"
 
@@ -658,6 +756,9 @@ class conector:
 
 
     def writer(self, code): 
+        """envía el dato code a la balanza, le agrega el fin de linea
+        requerido por la misma, si code = quit, procede a cerrar a conexión
+        y matar el thread"""
         if code[0:4] == "quit":
             print "CerrandoSocket"
             self.s.send("quit")
@@ -667,12 +768,14 @@ class conector:
         self.s.send(c)
 
     def printM(self,texto):
+        """imprime el texto pasado por argumento en la pantalla"""
         cadena = 'D "'+texto+'"'+'\r\n'
         self.s.send(cadena)
         self.scrMett = texto       #conserva la última cadena enviada a la pantalla
-                                #mettler
+                                    #mettler
         
     def Close(self):
+        """cierra la conexión, mata el thread lector"""
         self.window.alive = False
         self.window.conectado = False
         self.s.send("quit")
@@ -685,6 +788,8 @@ class filtros():
         self.rep = repeticiones
         self.guardar = False
         self.puntero = 0
+        # carga un diccionario y tres tuplas con las llaves correspondientes 
+        # a una carga inicial o una final
         if momento == "ini":
             self.filtros = {"F1Pi": [],"tF1Pi": None, "dpF1Pi": None,"F1Si": [],
                 "tF1Si": None,"dpF1Si": None,"F2Pi": [],"tF2Pi": None,"dpF2Pi": None,
@@ -704,41 +809,58 @@ class filtros():
             self.quefiltrotemp = ("tR1f","tF1Pf","tF1Sf","tF2Pf","tF2Sf","tR2f")
         else:
             return 1
-        print "clase filtros creada " + self.win.Tareas[-1]["repeticiones"]
         
     def Append(self,peso):
+        """Agrega el valor peso pasado por argumento a el filtro que está 
+        apuntado por self.puntero, si ya se cumplió con el número de repeticiones
+        requeridas devuelve True, si no False"""
         if str(len(self.filtros[self.quefiltro[self.puntero]])) < self.rep:
             self.filtros[self.quefiltro[self.puntero]].append(peso)
         if str(len(self.filtros[self.quefiltro[self.puntero]])) >= self.rep:
             if self.win.pesando[2][self.puntero]:
                 self.filtros[self.quefiltro[self.puntero]].append(peso)
-                print "agregar valor, pasado de repeticiones"
-            print "pasar al proximo"
+                
             print str(self.filtros[self.quefiltro[self.puntero]]) + " " \
                 +str(self.quefiltro[self.puntero])
+            
             return True
         elif str(len(self.filtros[self.quefiltro[self.puntero]])) > self.rep:
             self.win.estado = "agregando"
         return False
         
-    def Del(self,filtro):
-        pass
-               
+    def Del(self,queborrar):
+        """elimina valores de pesadas, todos, ultimo o el inidicado* """
+        if queborrar == 1:
+            """elimina todos los valores"""
+            self.filtros[self.quefiltro[self.puntero]] = []
+        elif queborrar == 0: 
+            """elimina el último valor"""
+            self.filtros[self.quefiltro[self.puntero]].pop()
+        if len(self.filtros[self.quefiltro[self.puntero]]) < self.rep:
+            print "ahora le faltan pesadas"
+            self.win.pesando[2][self.puntero] = False
+            self.win.pesando[1][self.puntero] = self.win.pesando[1][self.puntero].replace("*","") 
+                          
     def downpuntero(self):
+        """decrementa el puntero y da la vuelta si llegó al principio de la lista"""
         self.puntero -= 1
         if self.puntero < 0:         #analiza la lista circularmente
             self.puntero = 5
     
     def uppuntero(self):
+        """Incrementa el puntero y da la vuelta si llegó al fin de la lista"""
         self.puntero += 1
-        if self.puntero == 6:        #analiza la lista circularmente
+        if self.puntero == 6:
             self.puntero = 0
     
     def Promedio(self,punt):
+        """devuelve un string con el valor promedio del filtro apuntado por
+        punt enviado como argumento"""
         total = 0.0
         for valor in self.filtros[self.quefiltro[punt]]:
             total += float(valor)
-        return str(total/(len(self.filtros[self.quefiltro[punt]])))
+        return str(total/(len(self.filtros[self.quefiltro[punt]])))[0:8]
+
         
 
             
