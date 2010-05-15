@@ -74,7 +74,7 @@ class mimain(wx.App):
         self.diagCselected = [] #items seleccionados de la lista C
         self.Tareas = []        #lista de diccionarios cada uno con
                                 #los valores de una tarea distinta.
-        self.widecols = (120,100,wx.LIST_AUTOSIZE_USEHEADER,wx.LIST_AUTOSIZE_USEHEADER,120,130)
+        self.widecols = (130,100,wx.LIST_AUTOSIZE_USEHEADER,wx.LIST_AUTOSIZE_USEHEADER,120,130)
         self.valuecols = ("Vin","Modelo","IdVasos","Rep","Usuario","fecha y hora")
         self.gesbbdd = gesbbdd.gestion(BASEDEDATOS)
         self.res = xrc.XmlResource('meter.xrc')
@@ -415,9 +415,10 @@ Mettler Toledo"
         # prosigue con la secuencia
             self.frame.btnEnviar.Enable()   
             #botón para probar envío de datos
-            self.DisableFinal()             
+            #~ self.DisableFinal()             
             #deshabilita cuadros de texto
-            self.DisableInicial()
+            #~ self.DisableInicial()
+            
             self.Conexion.writer('K 3')     
             self.Conexion.writer("WS 0")
             self.puerta = 0
@@ -566,19 +567,14 @@ Mettler Toledo"
                 self.frame.texpeso[self.pesando[0]][self.Filtros.puntero].Clear()
                 self.frame.texpeso[self.pesando[0]][self.Filtros.puntero].\
                     AppendText(self.Filtros.Promedio(self.Filtros.puntero))
-                try:
-                    vacio = self.pesando[2].index(False)
-                except:
-                    vacio = "vacio"
-                print "valor de vacio" + str(vacio)
-                if vacio == "vacio":
-                    self.Conexion.printM("terminado?")
-                    self.estado = "TERMINADO"
-                else:
-                    self.Filtros.puntero = vacio #apunta al próximo filtro vacío
-                    #~ self.Filtros.uppuntero()
+                if False in self.pesando[2]:
+                    #~ self.Filtros.puntero = vacio #apunta al próximo filtro vacío
+                    self.Filtros.uppuntero()
                     self.estado = "PESAR"
                     self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
+                else:    
+                    self.Conexion.printM("terminado?")
+                    self.estado = "TERMINADO"
             self.Filtros.guardar = False
             print evt.data
         if evt.data == OK:
@@ -620,11 +616,11 @@ Mettler Toledo"
         for n in range(6):
             self.gesbbdd.nuevoValor((self.Filtros.quefiltro[n],self.Filtros.Promedio(n)),
             ("fechahora",self.Tareas[self.indice]["fechahora"]))
+        
 #-------------------------------------------------------------------------#
 #-------------------------------------------------------------------------#
 #-------------------------------------------------------------------------#
 
-    
     def DisableFinal(self):
         for wins in self.winFinal:
             wins.Disable()
@@ -859,7 +855,9 @@ class filtros():
         total = 0.0
         for valor in self.filtros[self.quefiltro[punt]]:
             total += float(valor)
-        return str(total/(len(self.filtros[self.quefiltro[punt]])))[0:8]
+        return str(round(total/(len(self.filtros[self.quefiltro[punt]])))[0:8],3) 
+        #retorna el valor promedio redondeado en tres cifras dps de la coma
+        #en formato de cadena
 
         
 
