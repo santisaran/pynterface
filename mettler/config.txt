@@ -7,9 +7,9 @@ S'modelo'
 p4
 S'fechahora'
 p5
-S'repeticiones'
-p6
 S'vasos'
+p6
+S'repeticiones'
 p7
 S'horainicio'
 p8
@@ -99,7 +99,7 @@ g11
 Nsg14
 Nsg3
 Nsg8
-Nsg6
+Nsg7
 Nsg18
 Nsg21
 Nsg26
@@ -109,7 +109,7 @@ Nsg43
 Nsg15
 Nsg12
 Nsg29
-Nsg7
+Nsg6
 Nsg32
 Nsg5
 Nsg24

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 #       shyshy3.py
-#       
+#      
 #       Copyright 2010 Santiago <saran@Santi>
 #       
 #       This program is free software; you can redistribute it and/or modify
@@ -855,7 +855,7 @@ class filtros():
         total = 0.0
         for valor in self.filtros[self.quefiltro[punt]]:
             total += float(valor)
-        return str(round(total/(len(self.filtros[self.quefiltro[punt]])))[0:8],3) 
+        return str(round(total/(len(self.filtros[self.quefiltro[punt]])),3)) 
         #retorna el valor promedio redondeado en tres cifras dps de la coma
         #en formato de cadena
 

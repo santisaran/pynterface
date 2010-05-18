@@ -71,8 +71,7 @@ class gestion():
         """Agrega nuevos campos a la tabla de la base de datos, recive como\
             Parámetro una lista de diccionarios con los valores a agregar"""
         for dic in filas:
-            print dic
-            diccionario = []
+            diccionario = []    #lista con los valores del diccionario
             for item in llaves:
                 diccionario.append(dic.get(item,None)) 
                 #si el item del diccionario no existe lo crea con el valor
@@ -95,6 +94,6 @@ if __name__ == '__main__':
     ges = gestion("base.dat")
     #~ ges.VerBase()
     listas = ges.Consultar("S.Paleka","Usuario","Usuario")
-    ges.nuevoValor(('F1Pi','55.000'),('usuario','P.Amaya'))
-    ges.nuevoValor(('F1Si','55.000'),('usuario','P.Amaya'))
+    #~ ges.nuevoValor(('F1Pi','55.000'),('usuario','P.Amaya'))
+    #~ ges.nuevoValor(('F1Si','55.000'),('usuario','P.Amaya'))
     print listas
