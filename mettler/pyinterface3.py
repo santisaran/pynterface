@@ -53,6 +53,9 @@ NO = "K C 6"
 CERO = "K C 5"
 OPENLEFT = "K C 10"
 OPENRIGTH = "K C 11"
+
+DP = "09.5"
+TEMP = "22.0"
 #----------------------------------------------------------------------#
 
 EVT_NEW_DATA_ID = wx.NewId()
@@ -397,6 +400,7 @@ Mettler Toledo"
         evt.Skip()
         
     def OnComenzarPesada(self,evt):
+        self.TareasTerminadas = []
         if self.frame.btnCom.GetValue():
             self.frame.SetTitle("Pesada de filtros, Pesando")
             self.frame.mensaje = ""
@@ -405,11 +409,8 @@ Mettler Toledo"
         else:
             self.frame.SetTitle("Pesada de filtros")
             if self.frame.conectado:
-                self.frame.conectado = False
-                self.Conexion.writer('DW')
-                self.Conexion.writer('K 4')
                 time.sleep(0.3)
-                self.Conexion.Close()
+                self.Conexion.writer("quit")
         if self.frame.conectado:            
         #si el thread está conectado con la balanza habilita botón enviar y
         # prosigue con la secuencia
@@ -418,7 +419,6 @@ Mettler Toledo"
             #~ self.DisableFinal()             
             #deshabilita cuadros de texto
             #~ self.DisableInicial()
-            
             self.Conexion.writer('K 3')     
             self.Conexion.writer("WS 0")
             self.puerta = 0
@@ -435,8 +435,8 @@ Mettler Toledo"
         else:
             #si no hubo conexión, o se cerró 
             self.frame.btnEnviar.Disable()
-            self.EnableFinal()
-            self.EnableInicial()
+            #~ self.EnableFinal()
+            #~ self.EnableInicial()
         evt.Skip()
     
         
@@ -461,7 +461,7 @@ Mettler Toledo"
     
     def OnAcquireData(self,evt):
         """Recibe un dato del el thread lector y dependiendo su valor dispara
-        la función necesaria, el switch se hace con un diccionario 
+        la función necesaria, el switch se hace con un diccionario
         de funciones"""
         print "llegó el dato: " + evt.data + " estado actual: " + self.estado
         if evt.data == CERO:
@@ -560,9 +560,11 @@ Mettler Toledo"
             if self.Filtros.Append(evt.data[-11:-3]):   
         # guarda el valor del peso, si retorna True es por que ya se  
         # pesaron las repeticiones.
+
                 if not self.pesando[2][self.Filtros.puntero]:
                     self.pesando[1][self.Filtros.puntero] += "*"
-                    self.pesando[2][self.Filtros.puntero] = True  
+                    self.pesando[2][self.Filtros.puntero] = True 
+                    self.Filtros.CargarAmbiente() 
                 #tilda el filtro como pesado
                 self.frame.texpeso[self.pesando[0]][self.Filtros.puntero].Clear()
                 self.frame.texpeso[self.pesando[0]][self.Filtros.puntero].\
@@ -581,7 +583,7 @@ Mettler Toledo"
             self.Conexion.writer("SIU")
             self.Filtros.guardar = True
         #este flag indica que hay que guardar el próximo valor 
-        #que llegue de la balanza
+        #que llegue de la balanza (peso, dp, temperatura)
         elif evt.data == NO:
             self.estado = "BORRANDO"
             self.Conexion.printM("del ultimo?")
@@ -607,16 +609,33 @@ Mettler Toledo"
             self.estado = "PESAR"
             self.Conexion.printM(self.pesando[1][self.Filtros.puntero])
         elif evt.data == OK:
-            self.saveonbase()
+            self.saveonbase()    
+            self.TareasTerminadas.append(self.Tareas.pop(self.indice))
+            if self.Tareas == []:
+                self.frame.btnCom.SetValue(False)
+                self.Conexion.writer("quit")
+                del(self.Conexion)
+                self.frame.CList.DeleteAllItems()
+                for listadedic in self.TareasTerminadas:
+                    self.CargarEnLista(self.frame.CList,listadedic)
+                self.Tareas = self.TareasTerminadas
+                self.TareasTerminadas = []
+                return
             self.estado = "TAREA"
+            self.indice = -1
             self.mettlertoledo()
         
     def saveonbase(self):
         """salva el valor actual de el diccionario en la base de datos"""
-        for n in range(6):
-            self.gesbbdd.nuevoValor((self.Filtros.quefiltro[n],self.Filtros.Promedio(n)),
+        pesos = [(self.Filtros.quefiltro[n],self.Filtros.Promedio(n)) for n in range(6)]
+        humed = [("dp" + self.Filtros.quefiltro[n],self.Filtros.dp(n)) for n in range(6)]
+        tempe = [("t" + self.Filtros.quefiltro[n],self.Filtros.temp(n)) for n in range(6)]
+        tiempo = [("horafin" if self.pesando[0] == "fin" else "horainicio",
+            time.strftime("%Y%m%d%H%M%S",time.localtime()))]
+        self.gesbbdd.nuevoValor(pesos + humed + tempe + tiempo,
             ("fechahora",self.Tareas[self.indice]["fechahora"]))
-        
+        if self.pesando[0] == "fin":
+            self.gesbbdd.nuevoValor((("terminado","'Y'"),),("fechahora",self.Tareas[self.indice]["fechahora"]))
 #-------------------------------------------------------------------------#
 #-------------------------------------------------------------------------#
 #-------------------------------------------------------------------------#
@@ -646,6 +665,14 @@ Mettler Toledo"
         self.frame.f2is.AppendText(str(diccio["F2Si"]))
         self.frame.r1i.AppendText(str(diccio["R1i"]))
         self.frame.r2i.AppendText(str(diccio["R2i"]))
+        for win in self.winFinal:
+            win.Clear()
+        self.frame.f1fp.AppendText(str(diccio["F1Pf"]))
+        self.frame.f2fp.AppendText(str(diccio["F2Pf"]))
+        self.frame.f1fs.AppendText(str(diccio["F1Sf"]))
+        self.frame.f2fs.AppendText(str(diccio["F2Sf"]))
+        self.frame.r1f.AppendText(str(diccio["R1f"]))
+        self.frame.r2f.AppendText(str(diccio["R2f"]))
         
     def mettlertoledo(self):
         tarea = self.Tareas[self.indice]
@@ -688,6 +715,7 @@ Mettler Toledo"
             pass
     
     def CargarEnLista(self,Lista,Dic):
+        #~ Lista.DeleteAllItems() 
         index = Lista.InsertStringItem(0, str(Dic["vin"]))
         Lista.SetStringItem(index, 1, str(Dic["modelo"]))
         Lista.SetStringItem(index, 2, str(Dic["vasos"]))
@@ -726,6 +754,10 @@ class ThreadLector(threading.Thread):
                     self.conector.writer("YESILIVE")
                     #protocolo propio de este programa para mantener viva la 
                     #conexió y detectar posibles cortes
+                elif mensaje[0:4] == "temp":    #recibe tempXX.X
+                    TEMP = mensaje[4:8]
+                elif mensaje[0:4] == "dwpt":    #recibe dwptXX.X
+                    DP = mensaje[4:8]
                 else:
                     wx.PostEvent(self.window, AcquireEvent(mensaje[:-2]))   
         print "conexión cerrada"
@@ -757,8 +789,14 @@ class conector:
         y matar el thread"""
         if code[0:4] == "quit":
             print "CerrandoSocket"
+            self.s.send("DW\r\n")
+            self.s.send("K 4\r\n")
+            time.sleep(0.3)
             self.s.send("quit")
+            time.sleep(0.3)
             self.s.close()
+            self.window.alive = False
+            self.window.conectado = False
             return
         c = code + "\r\n"
         self.s.send(c)
@@ -770,12 +808,12 @@ class conector:
         self.scrMett = texto       #conserva la última cadena enviada a la pantalla
                                     #mettler
         
-    def Close(self):
-        """cierra la conexión, mata el thread lector"""
-        self.window.alive = False
-        self.window.conectado = False
-        self.s.send("quit")
-        self.s.close()
+    #~ def Close(self):
+        #~ """cierra la conexión, mata el thread lector"""
+        #~ self.writer("quit")
+        #~ self.window.alive = False
+        #~ self.window.conectado = False
+        #~ self.s.close()
 
 class filtros():
     
@@ -803,6 +841,7 @@ class filtros():
             self.quefiltro = ("R1f","F1Pf","F1Sf","F2Pf","F2Sf","R2f")
             self.quefiltrodp = ("dpR1f","dpF1Pf","dpF1Sf","dpF2Pf","dpF2Sf","dpR2f")
             self.quefiltrotemp = ("tR1f","tF1Pf","tF1Sf","tF2Pf","tF2Sf","tR2f")
+            
         else:
             return 1
         
@@ -859,11 +898,16 @@ class filtros():
         #retorna el valor promedio redondeado en tres cifras dps de la coma
         #en formato de cadena
 
-        
-
-            
-        #~ self.traductor = {'ref 1':[],'prim fase 1':[],'secu fase 1':[],'prim fase 2':[],'secu fase 2':[],'ref 2':[]}
-
+    def CargarAmbiente(self):
+        self.filtros["dp" + self.quefiltro[self.puntero]] = DP
+        self.filtros["t" + self.quefiltro[self.puntero]] = TEMP
+    
+    def dp(self,n):
+        return self.filtros["dp" + self.quefiltro[n]]
+    
+    def temp(self,n):
+        return self.filtros["t" + self.quefiltro[n]]
+    
 if __name__ == '__main__':
     Aplicacion = mimain()
     Aplicacion.MainLoop()

@@ -5,6 +5,7 @@ clase mimain
 self.seleccionados = [] , items seleccionados de la lista E
 self.diagCselected = [] , items seleccionados de la lista C
 self.Tareas = [] , lista de diccionarios cada uno con los valores de una tarea distinta.
+self.TareasTerminadas = [] lista de diccionarios con las tareas que se acaban de pesar
 self.frame.conectado = False    , flag que indica conexión con la balanza
 self.frame.alive = True         , flag que mantiene con vida el trhead de conexión
 self.frame.selected = []

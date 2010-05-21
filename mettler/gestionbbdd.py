@@ -57,13 +57,15 @@ class gestion():
         
     def nuevoValor(self,nvalor,tuplakey):
         """Agregar un valor en una tupla existente de la base de datos
-        recive una tupla en nvalor con (campo,valor) y el valor que identifica
-        la tupla (ej, un nombre de usuario, una fecha, etc)"""
-        print "agregar valor " + nvalor[0] + "=" + nvalor[1]+ " en "+tuplakey[0] + " = " + tuplakey[1] 
-        try:
-            self.cursor.execute("update " + TABLA + " set " + nvalor[0]+" = " + "? where "+tuplakey[0]+ " = ?", (nvalor[1], tuplakey[1]))
-        except:
-            return 1
+        recibe una tupla de tuplas en nvalor con ((campo,valor),(campo,valor),...)
+        y el valor que identifica la/s tupla (ej, un nombre de usuario, una fecha, etc)"""
+        cadena = ""
+        for par in nvalor:
+            cadena += par[0] + " = " + par[1] + ", "
+        print "agregar valor " + cadena[:-2] + " en "+tuplakey[0] + " = " + tuplakey[1]
+        carga = "update " + TABLA + " set " + cadena[:-2] + " where "+tuplakey[0]+ " = " + tuplakey[1]
+        print carga
+        self.cursor.execute(carga)
         self.bbdd.commit()
         return 0
     
@@ -71,17 +73,10 @@ class gestion():
         """Agrega nuevos campos a la tabla de la base de datos, recive como\
             Parámetro una lista de diccionarios con los valores a agregar"""
         for dic in filas:
-            diccionario = []    #lista con los valores del diccionario
-            for item in llaves:
-                diccionario.append(dic.get(item,None)) 
-                #si el item del diccionario no existe lo crea con el valor
-                #None
-            try:
-                self.cursor.execute("insert into "+ TABLA+" values (?,?,?\
-                    ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,\
-                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",diccionario)
-            except (NameError, ValueError):
-                print NameError+ str (ValueError)
+            valores = [dic.get(item, None) for item in llaves]
+            qmarks = ','.join(['?']*len(llaves))
+            #si el item del diccionario no existe lo crea con el valor
+            self.cursor.execute("insert into pesadas values (" + qmarks + ")", valores)
         self.bbdd.commit()
         
     def Consultar(self, iteme, columna,ordenada = 'fechahora'):
@@ -93,7 +88,6 @@ class gestion():
 if __name__ == '__main__':
     ges = gestion("base.dat")
     #~ ges.VerBase()
-    listas = ges.Consultar("S.Paleka","Usuario","Usuario")
-    #~ ges.nuevoValor(('F1Pi','55.000'),('usuario','P.Amaya'))
-    #~ ges.nuevoValor(('F1Si','55.000'),('usuario','P.Amaya'))
-    print listas
+    #listas = ges.Consultar("S.Paleka","Usuario","Usuario")
+    ges.nuevoValor((('F1Pi','55.000'),("tF1Pi","22.0"),("dpF1Pi","9.5")),('usuario','M.Ruiz'))
+

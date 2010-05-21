@@ -25,7 +25,7 @@ except:
     import pickle
 
 def main():
-    datos = {'IP_BALANZA':'10.10.8.151',
+    datos = {'IP_BALANZA':'10.10.8.158',
         'BASEDATOS':'base.dat','TABLA':'pesadas',
         'IDVASOS':('1','2','3','4','5','6','7','8','9'),
         'dic' : {"vin": None,"modelo":None ,"fechahora":None, "vasos":None, "repeticiones":None,
@@ -49,7 +49,7 @@ def main():
             "dpR1i", "R1f", "tR1f", "dpR1f", "R2i",
             "tR2i", "dpR2i", "R2f", "tR2f", "dpR2f",
             "terminado"),
-            "PORT":9099
+            "PORT":9999
             }
     f = open('config.txt', 'w')
     pickle.dump(datos,f)

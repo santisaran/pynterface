@@ -143,7 +143,7 @@ Nsg34
 Nsg35
 NssS'PORT'
 p51
-I9099
+I9999
 sS'BASEDATOS'
 p52
 S'base.dat'
@@ -166,6 +166,6 @@ S'pesadas'
 p57
 sS'IP_BALANZA'
 p58
-S'10.10.8.151'
+S'10.10.8.158'
 p59
 s.
