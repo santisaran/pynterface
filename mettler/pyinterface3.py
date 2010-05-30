@@ -54,7 +54,7 @@ CERO = "K C 5"
 OPENLEFT = "K C 10"
 OPENRIGTH = "K C 11"
 
-DP = "09.5"
+
 TEMP = "22.0"
 #----------------------------------------------------------------------#
 
@@ -77,6 +77,8 @@ class mimain(wx.App):
         self.diagCselected = [] #items seleccionados de la lista C
         self.Tareas = []        #lista de diccionarios cada uno con
                                 #los valores de una tarea distinta.
+        self.DP = "09.5"
+        self.TEMP = ["22.0","22.0"]
         self.widecols = (130,100,wx.LIST_AUTOSIZE_USEHEADER,wx.LIST_AUTOSIZE_USEHEADER,120,130)
         self.valuecols = ("Vin","Modelo","IdVasos","Rep","Usuario","fecha y hora")
         self.gesbbdd = gesbbdd.gestion(BASEDEDATOS)
@@ -464,10 +466,21 @@ Mettler Toledo"
         la función necesaria, el switch se hace con un diccionario
         de funciones"""
         print "llegó el dato: " + evt.data + " estado actual: " + self.estado
-        if evt.data == CERO:
+        if evt.data[0:5] == "DP C ":
+            print evt.data
+            self.DP = evt.data[5:9]
+            print "DP = " + self.DP
+        
+        elif evt.data[0:3] == "M28":
+            self.TEMP.pop(0)
+            self.TEMP.append(evt.data[7:])
+            print self.TEMP 
+        
+        elif evt.data == CERO:
             self.Conexion.writer("DW")
             self.Conexion.writer("Z")
             evt.Skip()
+        
         elif evt.data == OPENLEFT:
             if self.puerta == 0:        #puerta cerrada, abrir
                 self.Conexion.writer("WS 2")
@@ -475,6 +488,7 @@ Mettler Toledo"
             else:
                 self.Conexion.writer("WS 0")
                 self.puerta = 0
+        
         elif evt.data == OPENRIGTH:
             if self.puerta == 0:        #puerta cerrada, abrir
                 self.Conexion.writer("WS 1")
@@ -482,6 +496,7 @@ Mettler Toledo"
             else:
                 self.Conexion.writer("WS 0")
                 self.puerta = 0
+        
         else:
             self.frame.estados[self.estado](evt) #diccionario de funciones
         
@@ -757,7 +772,7 @@ class ThreadLector(threading.Thread):
                 elif mensaje[0:4] == "temp":    #recibe tempXX.X
                     TEMP = mensaje[4:8]
                 elif mensaje[0:4] == "dwpt":    #recibe dwptXX.X
-                    DP = mensaje[4:8]
+                    self.DP = mensaje[4:8]
                 else:
                     wx.PostEvent(self.window, AcquireEvent(mensaje[:-2]))   
         print "conexión cerrada"
@@ -899,8 +914,9 @@ class filtros():
         #en formato de cadena
 
     def CargarAmbiente(self):
-        self.filtros["dp" + self.quefiltro[self.puntero]] = DP
-        self.filtros["t" + self.quefiltro[self.puntero]] = TEMP
+        self.filtros["dp" + self.quefiltro[self.puntero]] = self.win.DP
+        self.filtros["t" + self.quefiltro[self.puntero]] = \
+            str(round(((float(self.win.TEMP[0]) + float(self.win.TEMP[1]))/2.0),4))
     
     def dp(self,n):
         return self.filtros["dp" + self.quefiltro[n]]

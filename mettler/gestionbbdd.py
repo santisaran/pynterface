@@ -62,9 +62,8 @@ class gestion():
         cadena = ""
         for par in nvalor:
             cadena += par[0] + " = " + par[1] + ", "
-        print "agregar valor " + cadena[:-2] + " en "+tuplakey[0] + " = " + tuplakey[1]
+        print "\nagregar valor " + cadena[:-2] + " en "+tuplakey[0] + " = " + tuplakey[1] + "\n"
         carga = "update " + TABLA + " set " + cadena[:-2] + " where "+tuplakey[0]+ " = " + tuplakey[1]
-        print carga
         self.cursor.execute(carga)
         self.bbdd.commit()
         return 0

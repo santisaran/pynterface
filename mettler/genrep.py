@@ -19,20 +19,29 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-from reportlab.lib import colors
-from reportlab.graphics.shapes import *
+from reportlab.pdfgen   import canvas
+def hello(c):
+    from reportlab.lib.units import inch
+    # move the origin up and to the left
+    c.translate(inch,inch)
+    # define a large font
+    c.setFont("Helvetica", 14)
+    # choose some colors
+    c.setStrokeColorRGB(0.2,0.5,0.3)
+    c.setFillColorRGB(1,0,1)
+    # draw some lines
+    c.line(0,0,0,1.7*inch)
+    c.line(0,0,1*inch,0)
+    # draw a rectangle
+    c.rect(0.2*inch,0.2*inch,1*inch,1.5*inch, fill=1)
+    # make text go straight up
+    c.rotate(90)
+    # change color
+    c.setFillColorRGB(0,0,0.77) 
+    # say hello (note after rotate the y coord needs to be negative!)
+    c.drawString(0.3*inch, -inch, "Hello World")
+c = canvas.Canvas("hello.pdf")
+hello(c)
+c.showPage()
+c.save()
 
-def main():
-    
-    d = Drawing(400, 200)
-    d.add(Rect(50, 50, 300, 100, fillColor=colors.yellow))
-    d.add(String(150,100, 'Hola Dario', fontSize=18, fillColor=colors.red))
-    d.add(String(180,86, 'Special characters \
-        \xc2\xa2\xc2\xa9\xc2\xae\xc2\xa3\xce\xb1\xce\xb2',
-        fillColor=colors.red))
-    from reportlab.graphics import renderPDF
-    renderPDF.drawToFile(d, 'example1.pdf', 'My First Drawing')
-    return 0
-
-if __name__ == '__main__':
-	main()

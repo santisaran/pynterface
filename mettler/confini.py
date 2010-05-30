@@ -49,7 +49,7 @@ def main():
             "dpR1i", "R1f", "tR1f", "dpR1f", "R2i",
             "tR2i", "dpR2i", "R2f", "tR2f", "dpR2f",
             "terminado"),
-            "PORT":9999
+            "PORT":9997
             }
     f = open('config.txt', 'w')
     pickle.dump(datos,f)
