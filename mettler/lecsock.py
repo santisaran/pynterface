@@ -33,6 +33,7 @@ import threading
 import time
 import socket
 import os
+import Queue
 try:
     import cPickle as pickle
 except:
@@ -56,12 +57,10 @@ class main():
         self.s = socket.socket()
         self.s.bind((get_ip_addr(), PORT))
         self.s.listen(1)
-        self.alsocket = threading.Condition()
-        self.abalanza = threading.Condition()
-        self.lista = []
-        self.lstbal = []
+        self.lista = Queue.Queue()
+        self.lstbal = Queue.Queue()
         while True:
-            self.alive = True
+
             self.sc, self.addr = self.s.accept()
             self.sc.send("conexión iniciada\n")
             self.transmitter_thread = threading.Thread(target=self.writer)
@@ -70,7 +69,7 @@ class main():
             self.enviar_thread = threading.Thread(target=self.enviar)
             self.temp_thread = threading.Thread(target=self.temperatura)
             self.balanza_thread = threading.Thread(target=self.balserie)
-            
+            self.alive = True
             self.receiver_thread.start()
             self.dp_thread.start()
             self.transmitter_thread.start()
@@ -78,24 +77,15 @@ class main():
             self.temp_thread.start()
             self.balanza_thread.start()
             self.receiver_thread.join()
-            
-            for td in pids:
-                os.popen("kill -9 "+str(td))
-            
-            del self.transmitter_thread,self.dp_thread,self.receiver_thread,self.enviar_thread,self.temp_thread,self.balanza_thread
+            self.alive = False
             print "volviendo a escuchar"
         print "funcionando"
 
     def balserie(self):
          """thread encargado de enviar datos a la balanza"""
-         print "balserie " + str(os.getpid())
-         global pids
-         pids.append(os.getpid())
          while self.alive:
-            self.abalanza.acquire()
-            self.abalanza.wait(3)
             try:
-                datos = self.lstbal.pop()    
+                datos = self.lstbal.get(timeout=2)    
             except:
                 continue
             else:
@@ -105,14 +95,9 @@ class main():
         
     def enviar(self):
         """thread encargado de enviar datos por el socket"""
-        print "enviar " + str(os.getpid())
-        global pids
-        pids.append(os.getpid())
         while self.alive:
-            self.alsocket.acquire()
-            self.alsocket.wait()
             try:
-                self.obj = self.lista.pop()
+                self.obj = self.lista.get()
             except:
                 continue
             else:
@@ -123,13 +108,8 @@ class main():
                     print "error escribiendo socket"
                     self.sc.close()
                     break
-            self.alsocket.release()
-
 
     def reader(self):
-        print "reader " + str(os.getpid())
-        global pids
-        pids.append(os.getpid())
         timeout = False
         self.ser.flushInput()
         while self.alive:
@@ -148,10 +128,7 @@ class main():
                 self.sindatos = 0
                 #se usa este bloqueo por que hay mas de un thread que necesitan
                 #conexión con el socket
-                self.alsocket.acquire()
-                self.lista.append(line)
-                self.alsocket.notify()
-                self.alsocket.release()
+                self.lista.put(line)
                 #dato enviado al thread "self.enviar"
                 line = ""
             #~ else:
@@ -162,9 +139,6 @@ class main():
         """thread que lee la información del sensor de humedad 
         y envía un promedio de los últimos 8 valores por el socket abierto
         por la clase padre"""
-        print "dp " + str(os.getpid())
-        global pids
-        pids.append(os.getpid())
         dwpt = [9.5,9.5,9.5,9.5,9.5,9.5,9.5,9.5,9.5] #Carga inicial
         longitud = len(dwpt)
         timeout = False
@@ -189,17 +163,7 @@ class main():
                             promedio += float(item)
                         promedio = promedio/longitud
                         #enviar promedio mediante lista, notificando al thread enviar
-                        self.alsocket.acquire()
-                        self.lista.append("DP C " + str(round(promedio,4)))
-                        self.alsocket.notify()
-                        self.alsocket.release()
-                        #~ 
-                        #~ try:
-                            #~ self.sc.send("DP C " + str(round(promedio,4)))
-                        #~ except:
-                            #~ self.alive = False
-                            #~ print "error escribiendo socket DP"
-                            #~ continue
+                        self.lista.put("DP C " + str(round(promedio,4)))
                         i = 0
                     else:
                         i+=1
@@ -211,22 +175,13 @@ class main():
     def temperatura(self):
         """Thread encargado de consultar la temperatura a la balanza,
          cada 10 segundos""" 
-        print "temperatura " + str(os.getpid())       
-        global pids
-        pids.append(os.getpid())
         while self.alive:
-            self.abalanza.acquire()
-            self.lstbal.append("M28\r\n")
-            self.abalanza.notify()
-            self.abalanza.release()
+            self.lstbal.put("M28\r\n")
             time.sleep(10)
         
     def writer(self):
         """recibe comandos por el socket conectado a la interface de usuario
         y las envía a la balanza"""
-        print "writer " + str(os.getpid())
-        global pids
-        pids.append(os.getpid())
         self.sindatos = 0
         self.sc.settimeout(TIMEOUT)
         a=0
@@ -258,11 +213,8 @@ class main():
                 if datos[0:8] != "YESILIVE":
                     #si los datos recibidos no son "quit" ni "YESILIVE" envía
                     #los mismos por el puerto serie a la balanza
-                    self.abalanza.acquire()
                     print "encolando " + datos
-                    self.lstbal.append(datos)
-                    self.abalanza.notify()
-                    self.abalanza.release()
+                    self.lstbal.put(datos)
                     print "enviado a la lista" + datos
         print "writer muerto"
         try:
