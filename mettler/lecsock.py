@@ -97,7 +97,7 @@ class main():
         """thread encargado de enviar datos por el socket"""
         while self.alive:
             try:
-                self.obj = self.lista.get()
+                self.obj = self.lista.get(timeout=2)
             except:
                 continue
             else:

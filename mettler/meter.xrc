@@ -509,15 +509,15 @@
 			<object class="wxMenu" name="m_menu1">
 				<label>_Archivo</label>
 				<object class="wxMenuItem" name="abrir">
-					<label>&amp;Abrir</label>
+					<label>_Abrir</label>
 					<help></help>
 				</object>
 				<object class="wxMenuItem" name="guardar">
-					<label>Guardar\tctrl+g</label>
+					<label>Guardar\\tctrl+g</label>
 					<help></help>
 				</object>
 				<object class="wxMenuItem" name="salir">
-					<label>&amp;Salir\tctrl+q</label>
+					<label>_Salir\\tctrl+q</label>
 					<help></help>
 				</object>
 			</object>
@@ -864,7 +864,7 @@
 			<object class="wxMenu" name="archivo">
 				<label>_Archivo</label>
 				<object class="wxMenuItem" name="buscar">
-					<label>&amp;Buscar</label>
+					<label>_Buscar</label>
 					<help></help>
 				</object>
 			</object>
@@ -873,11 +873,9 @@
 			<orient>wxVERTICAL</orient>
 			<object class="sizeritem">
 				<option>1</option>
-				<flag>wxALL|wxEXPAND</flag>
+				<flag>wxALL</flag>
 				<border>5</border>
-				<object class="wxListCtrl" name="m_listCtrl3">
-					<style>wxLC_REPORT</style>
-				</object>
+				<object class="wxGrid" name="m_grid1" />
 			</object>
 			<object class="sizeritem">
 				<option>0</option>
@@ -894,15 +892,9 @@
 							<default>0</default>
 						</object>
 					</object>
-					<object class="spacer">
-						<option>1</option>
-						<flag>wxEXPAND</flag>
-						<border>5</border>
-						<size>0,0</size>
-					</object>
 					<object class="sizeritem">
 						<option>0</option>
-						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND</flag>
 						<border>5</border>
 						<object class="wxButton" name="btnfecha">
 							<label>Por Fecha</label>
@@ -914,7 +906,7 @@
 						<flag>wxEXPAND</flag>
 						<border>5</border>
 						<object class="wxBoxSizer">
-							<orient>wxVERTICAL</orient>
+							<orient>wxHORIZONTAL</orient>
 							<object class="sizeritem">
 								<option>0</option>
 								<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
@@ -925,9 +917,9 @@
 								</object>
 							</object>
 							<object class="sizeritem">
-								<option>0</option>
+								<option>1</option>
 								<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-								<border>5</border>
+								<border>0</border>
 								<object class="wxDatePickerCtrl" name="m_datePicker1">
 									<style>wxDP_DEFAULT</style>
 									<enabled>0</enabled>
@@ -943,9 +935,9 @@
 								</object>
 							</object>
 							<object class="sizeritem">
-								<option>0</option>
+								<option>1</option>
 								<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
-								<border>5</border>
+								<border>0</border>
 								<object class="wxDatePickerCtrl" name="m_datePicker2">
 									<style>wxDP_DEFAULT</style>
 									<enabled>0</enabled>

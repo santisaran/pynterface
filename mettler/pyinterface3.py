@@ -526,7 +526,10 @@ Mettler Toledo"
                 self.indice = -len(self.Tareas)
             self.mettlertoledo()
         elif evt.data == NO:
-            pass
+            self.frame.SetTitle("Pesada de filtros")
+            if self.frame.conectado:
+                time.sleep(0.3)
+                self.Conexion.writer("quit")
  
     def esPesar(self,evt):
         if evt.data == OK:
@@ -925,6 +928,6 @@ class filtros():
         return self.filtros["t" + self.quefiltro[n]]
     
 if __name__ == '__main__':
-    Aplicacion = mimain()
+    Aplicacion = mimain(0)
     Aplicacion.MainLoop()
     
