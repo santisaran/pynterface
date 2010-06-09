@@ -44,17 +44,15 @@ class gestion():
                                                 #cuando consulto la bbdd
         self.cursor = self.bbdd.cursor()
         self.dic = dic
+ 
     def VerBase(self):
         self.cursor.execute("""select * from pesadas""")
-        for r in self.cursor.fetchall():
-            print r
-            print "\n"
-
-        
-    def nuevaPesada(self,ntupla):
-        """Agregar nueva pesada a la base de datos"""
-        pass
-        
+        basecompleta = self.cursor.fetchall()
+        #~ for r in basecompleta:
+            #~ print r
+            #~ print "\n"
+        return basecompleta
+   
     def nuevoValor(self,nvalor,tuplakey):
         """Agregar un valor en una tupla existente de la base de datos
         recibe una tupla de tuplas en nvalor con ((campo,valor),(campo,valor),...)
@@ -77,12 +75,12 @@ class gestion():
             #si el item del diccionario no existe lo crea con el valor
             self.cursor.execute("insert into pesadas values (" + qmarks + ")", valores)
         self.bbdd.commit()
+        return 0
         
     def Consultar(self, iteme, columna,ordenada = 'fechahora'):
         consulta = "select * from " + TABLA + " where " + columna + " = " + "'" + iteme + "' order by " + ordenada
         self.cursor.execute(consulta)
         return self.cursor.fetchall()
-        
         
 if __name__ == '__main__':
     ges = gestion("base.dat")

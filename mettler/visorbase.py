@@ -25,6 +25,7 @@ try:
 except:
     import pickle
 import wx
+import time
 from wx import xrc
 import gestionbbdd as gesbbdd
 
