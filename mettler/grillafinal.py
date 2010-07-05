@@ -10,6 +10,7 @@ try:
 except:
     import pickle
 import gestionbbdd as gesbbdd
+from reportetabla import genrep
 
 archivo = file("config.txt", 'r')        #archivo donde se encuentran las
 datos = pickle.load(archivo)            #configuraciones iniciales.
@@ -29,7 +30,6 @@ def forfechahora(fecha):
 
 def Cargando(d,data,desde,hasta):
     #---------data = [(col, dic),(),(),()...]
-    gesbd = gesbbdd.gestion(BASEDEDATOS)
     baserows = gesbd.Rango(desde,hasta,"fechahora")
     for e,dic in enumerate(baserows):
         for key in colnames:
@@ -296,6 +296,8 @@ class MyFrame(wx.Frame):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
+        self.desde = hoy
+        self.hasta = hoy
         self.grid = MegaGrid(self, data, colnames)
         self.button_1 = wx.Button(self, -1, "Cargar")
         self.button_2 = wx.Button(self, -1, "Por Fecha")
@@ -308,9 +310,9 @@ class MyFrame(wx.Frame):
         item = menu.Append(-1, "Page Setup...\tF5",
             "Set up page margins and etc.")
         #self.Bind(wx.EVT_MENU, self.OnPageSetup, item)
-        item = menu.Append(-1, "Print Setup...\tF6",
-            "Set up the printer options, etc.")
-        #self.Bind(wx.EVT_MENU, self.OnPrintSetup, item)
+        item = menu.Append(-1, "Generar Reporte...\tF6",
+            "Genera reporte de los items seleccionados.")
+        self.Bind(wx.EVT_MENU, self.OnGenerarReporte, item)
         item = menu.Append(-1, "Print Preview...\tF7",
             "View the printout on-screen")
         #self.Bind(wx.EVT_MENU, self.OnPrintPreview, item)
@@ -337,9 +339,10 @@ class MyFrame(wx.Frame):
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("images/database.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.SetSize((-1, -1))
+        self.SetSize((800, 400))
         self.grid.CreateGrid(10, 3)
-        #self.grid.SetSelectionMode(wx.grid.Grid.wxGridSelectRows)
+        self.grid.EnableDragRowSize(0)
+        #~ self.grid.SetSelectionMode(wx.grid.Grid.wxGridSelectRows)
         # end wxGlade
 
     def __do_layout(self):
@@ -375,7 +378,17 @@ class MyFrame(wx.Frame):
         Cargando(d,data,self.desde,self.hasta)
         self.grid._table.data = data
         self.grid.Reset()
-        pass
+        evt.Skip()
+    
+    def OnGenerarReporte(self,evt):
+        #~ enviar = []
+        #~ for item in self.grid.GetSelectedRows():
+            #~ enviar.append(gesbd.Consultar(self.grid._table.data[item][1]["fechahora"],"fechahora")[0])
+        #~ print enviar
+        #~ 
+        genrep([gesbd.Consultar(self.grid._table.data[item][1]["fechahora"]\
+            ,"fechahora")[0] for item in self.grid.GetSelectedRows()]) 
+        evt.Skip()
         
     def OnExit(self,event):
 		self.Close()
@@ -401,6 +414,7 @@ if __name__ == "__main__":
         fecha.Year-=1
         fecha.Month = 11
     unmes = fecha.Format("%Y%m%d%H%M%S")
+    gesbd = gesbbdd.gestion(BASEDEDATOS)
     Cargando(d,data,unmes,hoy)
     app = wx.PySimpleApp(0)
     wx.InitAllImageHandlers()

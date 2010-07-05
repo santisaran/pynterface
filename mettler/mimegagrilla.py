@@ -30,8 +30,8 @@ def forfechahora(fecha):
     return cadena
 
 gesbd = gesbbdd.gestion(BASEDEDATOS)
-#baserows = gesbd.VerBase()
-baserows = gesbd.Parecido("201006","fechahora","horainicio")
+baserows = gesbd.VerBase()
+#baserows = gesbd.Parecido("201006","fechahora","horainicio")
 colnames = ["fechahora", "vin", "modelo", "usuario", "F1Si","F1Sf","F2Si",\
     "F2Sf","F1Pi","F1Pf","F2Pi","F2Pf"]
 d = {}
