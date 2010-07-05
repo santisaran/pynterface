@@ -30,7 +30,7 @@ import socket
 import sys
 import time
 from wx import xrc
-
+from reportetabla import genrep
 import gestionbbdd as gesbbdd
 #~ import conexion
 
@@ -629,18 +629,18 @@ Mettler Toledo"
         elif evt.data == OK:
             self.saveonbase()    
             self.TareasTerminadas.append(self.Tareas.pop(self.indice))
-            if self.Tareas == []:
-                self.frame.btnCom.SetValue(False)
-                self.Conexion.writer("quit")
-                del(self.Conexion)
-                self.frame.CList.DeleteAllItems()
-                for listadedic in self.TareasTerminadas:
+            if self.Tareas == []:                   #no hay mas tareas
+                self.frame.btnCom.SetValue(False)   #Desactiva boton
+                self.Conexion.writer("quit")        #Cierra conexion
+                del(self.Conexion )                 #borra instancia
+                self.frame.CList.DeleteAllItems()   #borra la lista de tareas
+                for listadedic in self.TareasTerminadas: 
                     self.CargarEnLista(self.frame.CList,listadedic)
-                self.Tareas = self.TareasTerminadas
+                self.Tareas = self.TareasTerminadas    #recarga la lista de tareas
                 self.TareasTerminadas = []
                 return
-            self.estado = "TAREA"
-            self.indice = -1
+            self.estado = "TAREA"               #Vuelve a estado TAREA
+            self.indice = -1                    
             self.mettlertoledo()
         
     def saveonbase(self):
@@ -654,6 +654,11 @@ Mettler Toledo"
             ("fechahora",self.Tareas[self.indice]["fechahora"]))
         if self.pesando[0] == "fin":
             self.gesbbdd.nuevoValor((("terminado","'Y'"),),("fechahora",self.Tareas[self.indice]["fechahora"]))
+            
+            enviar = self.gesbbdd.Consultar(self.Tareas[self.indice]["fechahora"],"fechahora")
+            #genera reporte de la pesada actual
+            genrep(enviar)  
+            
 #-------------------------------------------------------------------------#
 #-------------------------------------------------------------------------#
 #-------------------------------------------------------------------------#
@@ -843,10 +848,14 @@ class filtros():
         # carga un diccionario y tres tuplas con las llaves correspondientes 
         # a una carga inicial o una final
         if momento == "ini":
+
+        #diccionario de listas con valores pesados por cada filtro. 
+        #Luego se hará el promedio
             self.filtros = {"F1Pi": [],"tF1Pi": None, "dpF1Pi": None,"F1Si": [],
                 "tF1Si": None,"dpF1Si": None,"F2Pi": [],"tF2Pi": None,"dpF2Pi": None,
                 "F2Si": [],"tF2Si": None,"dpF2Si": None,"R1i": [],"tR1i": None,
                 "dpR1i": None,"R2i": [],"tR2i": None,"dpR2i": None}
+        #tuplas para apuntar a cada filtro
             self.quefiltro = ("R1i","F1Pi","F1Si","F2Pi","F2Si","R2i")
             self.quefiltrodp = ("dpR1i","dpF1Pi","dpF1Si","dpF2Pi","dpF2Si","dpR2i")
             self.quefiltrotemp = ("tR1i","tF1Pi","tF1Si","tF2Pi","tF2Si","tR2i")

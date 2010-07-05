@@ -40,17 +40,17 @@ class gestion():
     def __init__(self,archivo):
         self.archivo = archivo
         self.bbdd = dbapi.connect(self.archivo)
-        self.bbdd.row_factory = dbapi.Row       #esto me permite obtener diccionarios en vez de tuplas
-                                                #cuando consulto la bbdd
+        self.bbdd.row_factory = dbapi.Row       #esto me permite obtener 
+                    #diccionarios en vez de tuplas cuando consulto la bbdd
         self.cursor = self.bbdd.cursor()
         self.dic = dic
- 
+    
+    def seguridad(self,tupla):
+        pass
+    
     def VerBase(self):
         self.cursor.execute("""select * from pesadas""")
         basecompleta = self.cursor.fetchall()
-        #~ for r in basecompleta:
-            #~ print r
-            #~ print "\n"
         return basecompleta
    
     def nuevoValor(self,nvalor,tuplakey):
@@ -60,8 +60,10 @@ class gestion():
         cadena = ""
         for par in nvalor:
             cadena += par[0] + " = " + par[1] + ", "
-        print "\nagregar valor " + cadena[:-2] + " en "+tuplakey[0] + " = " + tuplakey[1] + "\n"
-        carga = "update " + TABLA + " set " + cadena[:-2] + " where "+tuplakey[0]+ " = " + tuplakey[1]
+        print "\nagregar valor " + cadena[:-2] + " en "+tuplakey[0] + \
+            " = " + tuplakey[1] + "\n"
+        carga = "update " + TABLA + " set " + cadena[:-2] + " where "+\
+            tuplakey[0]+ " = " + tuplakey[1]
         self.cursor.execute(carga)
         self.bbdd.commit()
         return 0
@@ -78,13 +80,27 @@ class gestion():
         return 0
         
     def Consultar(self, iteme, columna,ordenada = 'fechahora'):
-        consulta = "select * from " + TABLA + " where " + columna + " = " + "'" + iteme + "' order by " + ordenada
+        consulta = "select * from " + TABLA + " where " + columna + " = " + \
+            "'" + iteme + "' order by " + ordenada
+        self.cursor.execute(consulta)
+        return self.cursor.fetchall()
+        
+    def Parecido(self, iteme, columna, ordenada = 'fechahora'):
+        consulta = "select * from " + TABLA + " where " + columna + " like "\
+            + "'%" + iteme + "%' order by " + ordenada
+        self.cursor.execute(consulta)
+        return self.cursor.fetchall()
+        
+    def Rango(self, desde, hasta, columna, ordenada = 'fechahora'):
+        consulta = "select * from " + TABLA + " where " + columna + " > '" \
+            + desde + "' and " + columna + " < '" + hasta +"' order by " + ordenada
         self.cursor.execute(consulta)
         return self.cursor.fetchall()
         
 if __name__ == '__main__':
     ges = gestion("base.dat")
     #~ ges.VerBase()
-    #listas = ges.Consultar("S.Paleka","Usuario","Usuario")
-    ges.nuevoValor((('F1Pi','55.000'),("tF1Pi","22.0"),("dpF1Pi","9.5")),('usuario','M.Ruiz'))
-
+    #listas = ges.Rango("20100511083310","20100711084000","fechahora","usuario")
+    #ges.nuevoValor((('F1Pi','55.000'),("tF1Pi","22.0"),("dpF1Pi","9.5")),('usuario','M.Ruiz'))
+    #for pepe in listas:
+    #    print pepe

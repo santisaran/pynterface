@@ -25,7 +25,7 @@ except:
     import pickle
 
 def main():
-    datos = {'IP_BALANZA':'10.10.8.158',
+    datos = {'IP_BALANZA':'10.10.8.150',
         'BASEDATOS':'base.dat','TABLA':'pesadas',
         'IDVASOS':('1','2','3','4','5','6','7','8','9'),
         'dic' : {"vin": None,"modelo":None ,"fechahora":None, "vasos":None, "repeticiones":None,
