@@ -1,0 +1,1 @@
+Pequeña interface con una balanza con comunicación rs232
